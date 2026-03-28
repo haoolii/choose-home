@@ -178,6 +178,7 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
           columnDefs={colDefs}
           defaultColDef={{ sortable: true, resizable: true }}
           rowDragManaged
+          rowDragEntireRow
           suppressMovableColumns
         />
       </div>
