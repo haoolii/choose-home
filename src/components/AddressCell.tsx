@@ -10,6 +10,25 @@ import { BottomSheet } from "./BottomSheet";
 const isTouchDevice = () =>
   window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
+function ImgWithSpinner({ src, alt, maxWidth, maxHeight }: { src: string; alt: string; maxWidth: number; maxHeight: number }) {
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(false)
+  return (
+    <div style={{ position: 'relative', minWidth: loaded || error ? undefined : 80, minHeight: loaded || error ? undefined : 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {!loaded && !error && <div className="img-spinner" />}
+      {!error && (
+        <img
+          src={src}
+          alt={alt}
+          style={{ display: loaded ? 'block' : 'none', maxWidth, maxHeight, objectFit: 'contain' }}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+        />
+      )}
+    </div>
+  )
+}
+
 const MARGIN = 8;
 
 interface TooltipProps {
@@ -81,18 +100,11 @@ function Tooltip({
         {imgKey}　{unitId}
       </div>
       <div style={{ position: "relative", display: "inline-block" }}>
-        <img
+        <ImgWithSpinner
           src={imgSrc}
           alt={imgKey}
-          style={{
-            display: "block",
-            maxWidth: Math.min(1200, window.innerWidth - MARGIN * 2 - 10),
-            maxHeight: Math.min(800, window.innerHeight - MARGIN * 2 - 40),
-            objectFit: "contain",
-          }}
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
+          maxWidth={Math.min(1200, window.innerWidth - MARGIN * 2 - 10)}
+          maxHeight={Math.min(800, window.innerHeight - MARGIN * 2 - 40)}
         />
         {mark && (
           <div

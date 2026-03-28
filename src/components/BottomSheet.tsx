@@ -1,8 +1,27 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '@carbon/react'
 import { Close } from '@carbon/icons-react'
 import type { Mark } from './FloorImageModal'
+
+function BottomSheetImg({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(false)
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: error ? undefined : 80 }}>
+      {!loaded && !error && <div className="img-spinner" />}
+      {!error && (
+        <img
+          src={src}
+          alt={alt}
+          style={{ display: loaded ? 'block' : 'none', maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+        />
+      )}
+    </div>
+  )
+}
 
 interface Props {
   imgSrc: string
@@ -73,12 +92,7 @@ export function BottomSheet({ imgSrc, imgKey, unitId, mark, onClose }: Props) {
         {/* Image area */}
         <div style={{ flex: 1, overflow: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
           <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
-            <img
-              src={imgSrc}
-              alt={imgKey}
-              style={{ display: 'block', maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-              onError={(e) => { (e.target as HTMLImageElement).alt = '圖片不存在' }}
-            />
+            <BottomSheetImg src={imgSrc} alt={imgKey} />
             {mark && (
               <div style={{
                 position: 'absolute',
