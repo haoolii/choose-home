@@ -154,7 +154,7 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
   ], [handleRemove])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
       <div style={{
         display: 'flex',
         alignItems: 'center',

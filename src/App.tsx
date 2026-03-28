@@ -112,7 +112,7 @@ export default function App() {
 
   return (
     <>
-      <div style={{ display: showShortlist ? 'none' : 'flex', flexDirection: 'column', height: '100vh' }}>
+      <div style={{ display: showShortlist ? 'none' : 'flex', flexDirection: 'column', height: '100dvh' }}>
         <div style={{
           display: 'flex',
           justifyContent: 'flex-end',
@@ -154,7 +154,7 @@ export default function App() {
           聯繫：<a href="mailto:unnhao@gmail.com" style={{ color: 'inherit' }}>unnhao@gmail.com</a>
         </div>
       </div>
-      <div style={{ display: showShortlist ? 'flex' : 'none', flexDirection: 'column', height: '100vh' }}>
+      <div style={{ display: showShortlist ? 'flex' : 'none', flexDirection: 'column', height: '100dvh' }}>
         <ShortlistPage
           data={shortlistData}
           onRemove={removeFromShortlist}
