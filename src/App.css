@@ -1,10 +1,11 @@
 .ag-theme-alpine .ag-center-cols-viewport,
 .ag-theme-alpine .ag-body-horizontal-scroll-viewport {
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x pan-y;
 }
 
+.ag-theme-alpine .ag-row,
 .ag-theme-alpine .ag-cell {
+  touch-action: pan-x pan-y;
   user-select: none;
   -webkit-user-select: none;
 }
