@@ -11,6 +11,7 @@ import { ActionCell } from "./components/ActionCell";
 import { ShortlistFilter } from "./components/ShortlistFilter";
 import { ShortlistPage } from "./components/ShortlistPage";
 import { ColumnPicker, type PickerCol } from "./components/ColumnPicker";
+import { AddressCell } from "./components/AddressCell";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -72,6 +73,7 @@ export default function App() {
         headerName: "房屋地址",
         filter: "agTextColumnFilter",
         flex: 2,
+        cellRenderer: AddressCell,
       },
       {
         colId: "樓層",
