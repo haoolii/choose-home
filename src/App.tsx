@@ -54,8 +54,8 @@ export default function App() {
   }, [shortlistIds]);
 
   const context = useMemo(
-    () => ({ shortlist, addToShortlist }),
-    [shortlist, addToShortlist],
+    () => ({ shortlist, shortlistIds, addToShortlist }),
+    [shortlist, shortlistIds, addToShortlist],
   );
 
   const colDefs = useMemo<ColDef<EmptyRoom>[]>(
