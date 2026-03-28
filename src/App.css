@@ -1,14 +1,4 @@
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.img-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--cds-border-subtle);
-  border-top-color: var(--cds-link-primary);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
+
 
 .ag-theme-alpine .ag-center-cols-viewport,
 .ag-theme-alpine .ag-body-horizontal-scroll-viewport {

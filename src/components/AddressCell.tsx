@@ -14,8 +14,8 @@ function ImgWithSpinner({ src, alt, maxWidth, maxHeight }: { src: string; alt: s
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
   return (
-    <div style={{ position: 'relative', minWidth: loaded || error ? undefined : 80, minHeight: loaded || error ? undefined : 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {!loaded && !error && <div className="img-spinner" />}
+    <div style={{ position: 'relative', minWidth: loaded || error ? undefined : 80, minHeight: loaded || error ? undefined : 80, display: 'flex', alignItems: 'center', justifyContent: 'center', width: maxWidth, height: maxHeight }}>
+        {!loaded && !error && <div className="img-spinner" />}
       {!error && (
         <img
           src={src}
