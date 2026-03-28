@@ -18,7 +18,7 @@ export function ActionCell({ data, context }: ICellRendererParams<EmptyRoom> & {
       disabled={isAdded}
       onClick={() => context.addToShortlist(id)}
     >
-      {isAdded ? '已加入' : '加入備選'}
+      {isAdded ? '已加入' : '加入'}
     </Button>
   )
 }

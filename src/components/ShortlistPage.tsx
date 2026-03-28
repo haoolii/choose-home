@@ -163,13 +163,13 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
         borderBottom: '1px solid var(--cds-border-subtle)',
       }}>
         <Button kind="ghost" size="sm" renderIcon={ArrowLeft} onClick={onBack}>
-          返回房源列表
+          返回列表
         </Button>
         <span style={{ fontWeight: 600, fontSize: '1.125rem', flex: 1 }}>
-          備選清單（{rows.length} 間）
+          備選({rows.length})
         </span>
         <Button kind="secondary" size="sm" renderIcon={Download} onClick={handleExport}>
-          匯出圖片
+          匯出
         </Button>
       </div>
       <div className="ag-theme-alpine" style={{ flex: 1 }}>

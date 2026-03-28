@@ -38,7 +38,7 @@ export function ShortlistFilter({
         legendText=""
       >
         <RadioButton labelText="全部" value="all" id="slr-all" />
-        <RadioButton labelText="已加入備選" value="selected" id="slr-selected" />
+        <RadioButton labelText="已加入" value="selected" id="slr-selected" />
         <RadioButton labelText="未加入" value="unselected" id="slr-unselected" />
       </RadioButtonGroup>
     </div>
