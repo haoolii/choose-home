@@ -26,33 +26,32 @@ const DEFAULT_COL_DEF: ColDef = {
 export default function App() {
   const { data, loading, error } = useEmptyRoomData();
   useFloorMarks();
-  const [shortlist, setShortlist] = useState<Set<string>>(() => {
-    try {
-      return new Set(JSON.parse(localStorage.getItem("shortlist") || "[]"));
-    } catch {
-      return new Set();
-    }
+  const [shortlistIds, setShortlistIds] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem("shortlist") || "[]") }
+    catch { return [] }
   });
+  const shortlist = useMemo(() => new Set(shortlistIds), [shortlistIds]);
   const [showShortlist, setShowShortlist] = useState(false);
   const gridApiRef = useRef<GridApi | null>(null);
 
   const addToShortlist = useCallback((id: string) => {
-    setShortlist((prev) => new Set([...prev, id]));
+    setShortlistIds((prev) => prev.includes(id) ? prev : [...prev, id]);
   }, []);
 
   const removeFromShortlist = useCallback((id: string) => {
-    setShortlist((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
+    setShortlistIds((prev) => prev.filter(x => x !== id));
+  }, []);
+
+  const reorderShortlist = useCallback((ids: string[]) => {
+    setShortlistIds(ids);
+    localStorage.setItem("shortlist", JSON.stringify(ids));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("shortlist", JSON.stringify([...shortlist]));
+    localStorage.setItem("shortlist", JSON.stringify(shortlistIds));
     gridApiRef.current?.onFilterChanged();
     gridApiRef.current?.refreshCells({ force: true });
-  }, [shortlist]);
+  }, [shortlistIds]);
 
   const context = useMemo(
     () => ({ shortlist, addToShortlist }),
@@ -177,7 +176,9 @@ export default function App() {
       />
     );
 
-  const shortlistData = data.filter((d) => shortlist.has(d.房屋編號));
+  const shortlistData = shortlistIds
+    .map(id => data.find(d => d.房屋編號 === id))
+    .filter(Boolean) as EmptyRoom[]
 
   return (
     <>
@@ -247,6 +248,7 @@ export default function App() {
         <ShortlistPage
           data={shortlistData}
           onRemove={removeFromShortlist}
+          onReorder={reorderShortlist}
           onBack={() => setShowShortlist(false)}
         />
       </div>

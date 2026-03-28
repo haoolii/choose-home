@@ -10,10 +10,11 @@ import { AddressCell } from './AddressCell'
 interface Props {
   data: EmptyRoom[]
   onRemove: (id: string) => void
+  onReorder: (ids: string[]) => void
   onBack: () => void
 }
 
-export function ShortlistPage({ data, onRemove, onBack }: Props) {
+export function ShortlistPage({ data, onRemove, onReorder, onBack }: Props) {
   const [rows, setRows] = useState<EmptyRoom[]>(data)
   const gridApiRef = useRef<GridApi | null>(null)
   const handleExport = useCallback(() => {
@@ -195,7 +196,14 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
           suppressCellFocus
           suppressMovableColumns
           onGridReady={p => { gridApiRef.current = p.api }}
-          onRowDragEnd={() => gridApiRef.current?.refreshCells({ force: true })}
+          onRowDragEnd={() => {
+            const api = gridApiRef.current
+            if (!api) return
+            const ids: string[] = []
+            api.forEachNode(node => { if (node.data) ids.push(node.data.房屋編號) })
+            onReorder(ids)
+            api.refreshCells({ force: true })
+          }}
         />
       </div>
     </div>
