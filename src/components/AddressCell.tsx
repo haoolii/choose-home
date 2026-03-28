@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { createPortal } from "react-dom";
 import type { ICellRendererParams } from "ag-grid-community";
 import type { EmptyRoom } from "../hooks/useEmptyRoomData";
@@ -114,11 +114,22 @@ function Tooltip({
   );
 }
 
-export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
+export function AddressCell({ data, eGridCell }: ICellRendererParams<EmptyRoom>) {
   const [hovering, setHovering] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!eGridCell || !isTouchDevice()) return
+    const handler = (e: TouchEvent) => {
+      e.stopPropagation()
+      setHovering(false)
+      setModalOpen(true)
+    }
+    eGridCell.addEventListener('touchend', handler)
+    return () => eGridCell.removeEventListener('touchend', handler)
+  }, [eGridCell])
 
   if (!data) return null;
 
@@ -149,12 +160,6 @@ export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
         justifyContent: "flex-start",
         gap: "0.25rem",
         width: "100%",
-      }}
-      onTouchStart={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        setHovering(false);
-        setModalOpen(true);
       }}
     >
       <span
