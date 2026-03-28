@@ -1,39 +1,43 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useLayoutEffect } from 'react'
 import { createPortal } from 'react-dom'
 import type { ICellRendererParams } from 'ag-grid-community'
 import type { EmptyRoom } from '../hooks/useEmptyRoomData'
-import { parseFloor, parseStreetNo } from '../utils/parse'
+import { parseFloor, parseStreetNo, parseUnitNo } from '../utils/parse'
 import { Image } from '@carbon/icons-react'
+import { FloorImageModal, loadMark, type Mark } from './FloorImageModal'
 
-export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
-  const [visible, setVisible] = useState(false)
-  const [pos, setPos] = useState({ x: 0, y: 0 })
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+const MARGIN = 8
 
-  if (!data) return null
+interface TooltipProps {
+  anchorX: number
+  anchorY: number
+  imgSrc: string
+  imgKey: string
+  unitId: string
+  mark: Mark | null
+  onMouseEnter: () => void
+  onMouseLeave: () => void
+}
 
-  const floor = parseFloor(data.房屋地址)
-  const streetNo = parseStreetNo(data.房屋地址)
-  const imgSrc = `/floor/${data.棟別}${streetNo}-${floor}F.jpg`
+function Tooltip({ anchorX, anchorY, imgSrc, imgKey, unitId, mark, onMouseEnter, onMouseLeave }: TooltipProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [style, setStyle] = useState<React.CSSProperties>({ position: 'fixed', left: anchorX + 12, top: anchorY + 12, visibility: 'hidden' })
 
-  const show = (e: React.MouseEvent) => {
-    if (timerRef.current) clearTimeout(timerRef.current)
-    setPos({ x: e.clientX, y: e.clientY })
-    setVisible(true)
-  }
+  useLayoutEffect(() => {
+    if (!ref.current) return
+    const { offsetWidth: w, offsetHeight: h } = ref.current
+    const left = Math.min(anchorX + 12, window.innerWidth - w - MARGIN)
+    const top = Math.min(anchorY + 12, window.innerHeight - h - MARGIN)
+    setStyle({ position: 'fixed', left: Math.max(MARGIN, left), top: Math.max(MARGIN, top), visibility: 'visible' })
+  }, [anchorX, anchorY])
 
-  const hide = () => {
-    timerRef.current = setTimeout(() => setVisible(false), 100)
-  }
-
-  const tooltip = visible ? createPortal(
+  return createPortal(
     <div
-      onMouseEnter={() => { if (timerRef.current) clearTimeout(timerRef.current) }}
-      onMouseLeave={hide}
+      ref={ref}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
-        position: 'fixed',
-        left: pos.x + 12,
-        top: pos.y + 12,
+        ...style,
         zIndex: 9999,
         background: '#fff',
         border: '1px solid var(--cds-border-subtle)',
@@ -43,15 +47,60 @@ export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
         pointerEvents: 'auto',
       }}
     >
-      <img
-        src={imgSrc}
-        alt={`${data.棟別}${streetNo}-${floor}F`}
-        style={{ display: 'block', maxWidth: 1200, maxHeight: 800, objectFit: 'contain' }}
-        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-      />
+      <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--cds-text-secondary)', padding: '2px 4px 6px' }}>
+        {imgKey}　{unitId}
+      </div>
+      <div style={{ position: 'relative', display: 'inline-block' }}>
+        <img
+          src={imgSrc}
+          alt={imgKey}
+          style={{ display: 'block', maxWidth: Math.min(1200, window.innerWidth - MARGIN * 2 - 10), maxHeight: Math.min(800, window.innerHeight - MARGIN * 2 - 40), objectFit: 'contain' }}
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
+        {mark && (
+          <div style={{
+            position: 'absolute',
+            left: `${mark.x * 100}%`,
+            top: `${mark.y * 100}%`,
+            width: `${mark.w * 100}%`,
+            height: `${mark.h * 100}%`,
+            border: '4px solid #ff0000',
+            pointerEvents: 'none',
+            boxSizing: 'border-box',
+          }} />
+        )}
+      </div>
     </div>,
     document.body
-  ) : null
+  )
+}
+
+export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
+  const [hovering, setHovering] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [pos, setPos] = useState({ x: 0, y: 0 })
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  if (!data) return null
+
+  const floor = parseFloor(data.房屋地址)
+  const streetNo = parseStreetNo(data.房屋地址)
+  const imgKey = `${data.棟別}${streetNo}-${floor}F`
+  const imgSrc = `/floor/${imgKey}.jpg`
+  const unitNo = parseUnitNo(data.房屋地址)
+  const unitId = `${floor}樓之${unitNo}`
+
+  const [mark, setMark] = useState(() => loadMark(imgKey, unitId))
+
+  const showHover = (e: React.MouseEvent) => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setPos({ x: e.clientX, y: e.clientY })
+    setHovering(true)
+  }
+
+  const hideHover = () => {
+    timerRef.current = setTimeout(() => setHovering(false), 100)
+  }
 
   return (
     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '0.25rem', width: '100%' }}>
@@ -59,14 +108,40 @@ export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
         {data.房屋地址}
       </span>
       <span
-        onMouseEnter={show}
+        onMouseEnter={showHover}
         onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
-        onMouseLeave={hide}
-        style={{ flexShrink: 0, cursor: 'pointer', color: 'var(--cds-link-primary)', display: 'flex', alignItems: 'center' }}
+        onMouseLeave={hideHover}
+        // onClick={(e) => { e.stopPropagation(); setHovering(false); setModalOpen(true) }}
+        style={{
+          flexShrink: 0,
+          cursor: 'pointer',
+          color: mark ? '#ff0000' : 'var(--cds-link-primary)',
+          display: 'flex',
+          alignItems: 'center',
+        }}
       >
         <Image size={16} />
       </span>
-      {tooltip}
+      {hovering && !modalOpen && (
+        <Tooltip
+          anchorX={pos.x}
+          anchorY={pos.y}
+          imgSrc={imgSrc}
+          imgKey={imgKey}
+          unitId={unitId}
+          mark={mark}
+          onMouseEnter={() => { if (timerRef.current) clearTimeout(timerRef.current) }}
+          onMouseLeave={hideHover}
+        />
+      )}
+      {modalOpen && (
+        <FloorImageModal
+          imgSrc={imgSrc}
+          imgKey={imgKey}
+          unitId={unitId}
+          onClose={() => { setModalOpen(false); setMark(loadMark(imgKey, unitId)) }}
+        />
+      )}
     </span>
   )
 }

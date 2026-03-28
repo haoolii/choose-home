@@ -5,6 +5,7 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { Button, InlineNotification, DataTableSkeleton } from "@carbon/react";
 import { Bookmark } from "@carbon/icons-react";
 import { useEmptyRoomData, type EmptyRoom } from "./hooks/useEmptyRoomData";
+import { useFloorMarks } from "./hooks/useFloorMarks";
 import { parsePrice, parseFloor } from "./utils/parse";
 import { SetFilter } from "./components/SetFilter";
 import { ActionCell } from "./components/ActionCell";
@@ -24,6 +25,7 @@ const DEFAULT_COL_DEF: ColDef = {
 
 export default function App() {
   const { data, loading, error } = useEmptyRoomData();
+  useFloorMarks();
   const [shortlist, setShortlist] = useState<Set<string>>(() => {
     try {
       return new Set(JSON.parse(localStorage.getItem("shortlist") || "[]"));
