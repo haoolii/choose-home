@@ -5,6 +5,7 @@ import { Button } from '@carbon/react'
 import { ArrowLeft, TrashCan, Download } from '@carbon/icons-react'
 import type { EmptyRoom } from '../hooks/useEmptyRoomData'
 import { parsePrice, parseFloor } from '../utils/parse'
+import { AddressCell } from './AddressCell'
 
 interface Props {
   data: EmptyRoom[]
@@ -113,7 +114,7 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
       suppressHeaderFilterButton: true,
     },
     { field: '房屋編號', headerName: '房屋編號', width: 100 },
-    { field: '房屋地址', headerName: '房屋地址', flex: 2 },
+    { field: '房屋地址', headerName: '房屋地址', flex: 2, cellRenderer: AddressCell },
     {
       headerName: '樓層',
       width: 90,
