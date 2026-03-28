@@ -143,6 +143,16 @@ export default function App() {
             onGridReady={p => { gridApiRef.current = p.api }}
           />
         </div>
+        <div style={{
+          padding: '0.5rem 1rem',
+          borderTop: '1px solid var(--cds-border-subtle)',
+          fontSize: '0.75rem',
+          color: 'var(--cds-text-secondary)',
+          textAlign: 'center',
+        }}>
+          南港機廠社會住宅1區 - 選屋小工具 | 
+          聯繫：<a href="mailto:unnhao@gmail.com" style={{ color: 'inherit' }}>unnhao@gmail.com</a>
+        </div>
       </div>
       <div style={{ display: showShortlist ? 'flex' : 'none', flexDirection: 'column', height: '100vh' }}>
         <ShortlistPage
