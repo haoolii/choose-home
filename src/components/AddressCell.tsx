@@ -114,7 +114,8 @@ export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
         onMouseEnter={showHover}
         onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
         onMouseLeave={hideHover}
-        onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); setHovering(false); setModalOpen(true) }}
+        onTouchEnd={(e) => { e.stopPropagation(); e.preventDefault(); setHovering(false); setModalOpen(true) }}
+        onClick={(e) => { if (isTouchDevice()) return; e.stopPropagation(); setHovering(false); setModalOpen(true) }}
         style={{
           flexShrink: 0,
           cursor: 'pointer',
