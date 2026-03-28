@@ -5,6 +5,9 @@ import type { EmptyRoom } from '../hooks/useEmptyRoomData'
 import { parseFloor, parseStreetNo, parseUnitNo } from '../utils/parse'
 import { Image } from '@carbon/icons-react'
 import { FloorImageModal, loadMark, type Mark } from './FloorImageModal'
+import { BottomSheet } from './BottomSheet'
+
+const isTouchDevice = () => window.matchMedia('(hover: none) and (pointer: coarse)').matches
 
 const MARGIN = 8
 
@@ -111,7 +114,7 @@ export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
         onMouseEnter={showHover}
         onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
         onMouseLeave={hideHover}
-        // onClick={(e) => { e.stopPropagation(); setHovering(false); setModalOpen(true) }}
+        onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); setHovering(false); setModalOpen(true) }}
         style={{
           flexShrink: 0,
           cursor: 'pointer',
@@ -134,14 +137,22 @@ export function AddressCell({ data }: ICellRendererParams<EmptyRoom>) {
           onMouseLeave={hideHover}
         />
       )}
-      {modalOpen && (
+      {modalOpen && (import.meta.env.DEV && !isTouchDevice() ? (
         <FloorImageModal
           imgSrc={imgSrc}
           imgKey={imgKey}
           unitId={unitId}
           onClose={() => { setModalOpen(false); setMark(loadMark(imgKey, unitId)) }}
         />
-      )}
+      ) : (
+        <BottomSheet
+          imgSrc={imgSrc}
+          imgKey={imgKey}
+          unitId={unitId}
+          mark={mark}
+          onClose={() => { setModalOpen(false); setMark(loadMark(imgKey, unitId)) }}
+        />
+      ))}
     </span>
   )
 }
