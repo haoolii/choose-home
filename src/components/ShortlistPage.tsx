@@ -104,6 +104,17 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
 
   const colDefs = useMemo<ColDef<EmptyRoom>[]>(() => [
     {
+      headerName: '#',
+      width: 48,
+      maxWidth: 48,
+      sortable: false,
+      filter: false,
+      resizable: false,
+      suppressHeaderMenuButton: true,
+      suppressHeaderFilterButton: true,
+      valueGetter: p => p.node ? (p.node.rowIndex ?? 0) + 1 : null,
+    },
+    {
       rowDrag: true,
       width: 48,
       maxWidth: 48,
@@ -177,7 +188,7 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
         <AgGridReact<EmptyRoom>
           rowData={rows}
           columnDefs={colDefs}
-          defaultColDef={{ sortable: true, resizable: true }}
+          defaultColDef={{ sortable: false, resizable: true }}
           rowDragManaged
           rowDragEntireRow
           suppressCellFocus
