@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
-import type { ColDef, ICellRendererParams } from 'ag-grid-community'
+import type { ColDef, ICellRendererParams, GridApi } from 'ag-grid-community'
 import { Button } from '@carbon/react'
 import { ArrowLeft, TrashCan, Download } from '@carbon/icons-react'
 import type { EmptyRoom } from '../hooks/useEmptyRoomData'
@@ -15,6 +15,7 @@ interface Props {
 
 export function ShortlistPage({ data, onRemove, onBack }: Props) {
   const [rows, setRows] = useState<EmptyRoom[]>(data)
+  const gridApiRef = useRef<GridApi | null>(null)
   const handleExport = useCallback(() => {
     const COLS: { label: string; getValue: (r: EmptyRoom) => string; w: number }[] = [
       { label: '房屋編號',     getValue: r => r.房屋編號,                                      w: 80  },
@@ -193,6 +194,8 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
           rowDragEntireRow
           suppressCellFocus
           suppressMovableColumns
+          onGridReady={p => { gridApiRef.current = p.api }}
+          onRowDragEnd={() => gridApiRef.current?.refreshCells({ force: true })}
         />
       </div>
     </div>
