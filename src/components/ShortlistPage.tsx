@@ -82,7 +82,7 @@ export function ShortlistPage({ data, onRemove, onBack }: Props) {
     ctx.strokeRect(PAD, TITLE_H, totalW - PAD * 2, ROW_H * (rows.length + 1))
 
     const link = document.createElement('a')
-    link.download = `備選清單_${new Date().toLocaleDateString('zh-TW').replace(/\//g, '-')}.png`
+    link.download = `備選清單_${new Date().toLocaleDateString('zh-TW').replace(/\//g, '-')}_${+new Date()}.png`
     link.href = canvas.toDataURL('image/png')
     link.click()
   }, [rows])
