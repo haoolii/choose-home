@@ -137,6 +137,7 @@ export default function App() {
             defaultColDef={DEFAULT_COL_DEF}
             context={context}
             rowModelType="clientSide"
+            suppressCellFocus
             suppressMovableColumns
             suppressMenuHide
             onGridReady={p => { gridApiRef.current = p.api }}
